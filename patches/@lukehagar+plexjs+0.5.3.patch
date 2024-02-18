@@ -1,0 +1,29 @@
+diff --git a/node_modules/@lukehagar/plexjs/src/sdk/library.ts b/node_modules/@lukehagar/plexjs/src/sdk/library.ts
+index 3cf4937..a2086c3 100644
+--- a/node_modules/@lukehagar/plexjs/src/sdk/library.ts
++++ b/node_modules/@lukehagar/plexjs/src/sdk/library.ts
+@@ -441,6 +441,7 @@ export class Library extends ClientSDK {
+     async getLibraryItems(
+         sectionId: number,
+         tag: operations.Tag,
++        query?: string,
+         options?: RequestOptions
+     ): Promise<operations.GetLibraryItemsResponse> {
+         const input$: operations.GetLibraryItemsRequest = {
+@@ -465,7 +466,7 @@ export class Library extends ClientSDK {
+             }),
+         };
+ 
+-        const path$ = this.templateURLComponent("/library/sections/{sectionId}/{tag}")(pathParams$);
++        const path$ = this.templateURLComponent("/library/sections/{sectionId}/{tag}?includeAdvanced=1")(pathParams$);
+ 
+         let security$;
+         if (typeof this.options$.accessToken === "function") {
+@@ -484,6 +485,7 @@ export class Library extends ClientSDK {
+                 path: path$,
+                 headers: headers$,
+                 body: body$,
++                query: query,
+             },
+             options
+         );
