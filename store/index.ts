@@ -11,13 +11,14 @@ type State = {
   plexConnection?: {
     serverName: string;
     serverUri: string;
+    serverAccessToken: string;
   }
   plexLibrary?: PlexLibrary;
 };
 
 type Actions = {
   setPlexAuthToken: (token: string) => void;
-  setPlexServer: (name: string, uri: string) => void;
+  setPlexServer: (name: string, uri: string, accessToken: string) => void;
   setPlexLibrary: (library: PlexLibrary) => void;
 };
 
@@ -26,11 +27,12 @@ export const useStore = create<State & Actions>()(
     (set, get) => ({
       setPlexAuthToken: (token: string) =>
         set({ authToken: token }),
-      setPlexServer: (name: string, uri: string) =>
+      setPlexServer: (name: string, uri: string, accessToken: string) =>
         set({
           plexConnection: {
             serverName: name,
             serverUri: uri,
+            serverAccessToken: accessToken,
           },
         }),
       setPlexLibrary: (library: PlexLibrary) =>

@@ -33,7 +33,8 @@ export function PlexClientProvider(props: React.PropsWithChildren) {
     return <Redirect href="/libraries" />;
   }
 
-  const client = new PlexClient(plexAuthToken, conn.serverUri);
+  // Using the server access token for PMS API
+  const client = new PlexClient(conn.serverAccessToken, conn.serverUri);
 
   return (
     <PlexClientContext.Provider value={[client, library]}>

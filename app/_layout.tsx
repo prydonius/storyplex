@@ -12,6 +12,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+import "expo-dev-client";
 
 export default function RootLayout() {
   const hasHydrated = useStore.persist.hasHydrated;

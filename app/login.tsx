@@ -11,7 +11,6 @@ const Login: React.FC = () => {
   const handlePressButtonAsync = async () => {
     const authToken = await PlexClient.getPlexAuth();
     if (authToken) {
-      console.log(`got ${authToken}, updating state`);
       setPlexAuthToken(authToken);
       router.push("/setup");
     }

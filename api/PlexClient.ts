@@ -56,12 +56,9 @@ export class PlexClient {
   }
 
   static async getPlexAuth(): Promise<string | undefined> {
-    const plexPinRequest = await fetch(`${this.plexApiBase}/pins`, {
+    const plexPinRequest = await fetch(`${this.plexApiBase}/pins?strong=true`, {
       method: "POST",
       headers: this.headers,
-      body: JSON.stringify({
-        strong: true,
-      }),
     });
 
     const response = await plexPinRequest.json();
@@ -92,7 +89,6 @@ export class PlexClient {
       );
 
       const response = await plexAuthTokenRequest.json();
-      console.log(response);
       authToken = response.authToken;
       await delay(1000);
     } while (authToken == null);
@@ -115,6 +111,7 @@ export class PlexClient {
       name: r.name,
       ip: r.publicAddress,
       uri: r.connections.find((c) => !c.local)?.uri,
+      accessToken: r.accessToken,
     }));
   }
 
@@ -251,12 +248,14 @@ interface PlexResource {
     local: boolean;
   }[];
   publicAddress: string;
+  accessToken: string;
 }
 
 export interface PlexServer {
   name: string;
   ip: string;
   uri: string;
+  accessToken: string;
 }
 
 export interface PlexLibrary {

@@ -22,6 +22,7 @@ const Setup: React.FC = () => {
   useEffect(() => {
     const getData = async () => {
       if (plexAuthToken !== undefined) {
+        // using the Plex auth token for the Plex.tv API
         const client = new PlexClient(plexAuthToken);
         const servers = await client.getPlexServers();
         setPlexServers(servers);
@@ -32,7 +33,7 @@ const Setup: React.FC = () => {
 
   const handleServerListPress = async (name: string) => {
     const server = plexServers.find((s) => s.name == name);
-    setPlexServer(name, server!.uri);
+    setPlexServer(name, server!.uri, server!.accessToken);
     router.push("/libraries");
   };
 
