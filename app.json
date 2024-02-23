@@ -18,6 +18,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.prydonius.storyplex",
+      "buildNumber": "2",
       "infoPlist": {
         "UIBackgroundModes": ["audio"]
       }
