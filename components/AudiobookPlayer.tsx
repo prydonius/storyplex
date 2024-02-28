@@ -6,7 +6,6 @@ import {
   RotateCcw,
   RotateCw,
 } from "@tamagui/lucide-icons";
-import { AVPlaybackStatus, Audio, InterruptionModeIOS } from "expo-av";
 import { Duration } from "luxon";
 import { useEffect, useState } from "react";
 import { Button, Group, Slider, Text, XStack, YStack, useTheme } from "tamagui";
@@ -14,6 +13,7 @@ import { PlexAudiobook, PlexChapter, PlexPlayQueue } from "../api/PlexClient";
 import { usePlexClient } from "../utils/PlexClientProvider";
 import ChapterSelector from "./ChapterSelector";
 import PlayPauseIcon from "./PlayPauseIcon";
+import usePlayer from "../hooks/usePlayer";
 
 // playback status is updated every 250ms, so update plex every 5s
 const PlexProgressUpdateIntervalMultiplier = 20;
@@ -29,43 +29,19 @@ export default function AudiobookPlayer({
   queue,
 }: AudiobookPlayerProps) {
   const [client] = usePlexClient();
-  const [playback, setPlayback] = useState<Audio.Sound>();
-  const [playbackStatus, setPlaybackStatus] = useState<AVPlaybackStatus>();
   const [chapter, setChapter] = useState<PlexChapter>();
   const [progressUpdateCount, setProgressUpdateCount] = useState<number>(
     PlexProgressUpdateIntervalMultiplier - 1,
   );
-  const [playbackRate, setPlaybackRate] = useState<number>(1);
   const theme = useTheme();
 
-  useEffect(() => {
-    const getData = async () => {
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: true,
-        interruptionModeIOS: InterruptionModeIOS.DoNotMix,
-      });
-      const { sound } = await Audio.Sound.createAsync(
-        {
-          uri: audiobook.uri!,
-        },
-        {
-          positionMillis: audiobook.viewOffset,
-        },
-        setPlaybackStatus,
-      );
-      setPlayback(sound);
-    };
-    getData();
-  }, []);
+  const player = usePlayer(audiobook);
 
   useEffect(() => {
-    if (!playbackStatus?.isLoaded) return;
-
     const currentChapter = audiobook?.chapters?.find(
       (c) =>
-        playbackStatus.positionMillis >= c.startTimeOffset &&
-        playbackStatus.positionMillis < c.endTimeOffset,
+        player.position >= c.startTimeOffset &&
+        player.position < c.endTimeOffset,
     );
     setChapter(currentChapter);
 
@@ -75,58 +51,40 @@ export default function AudiobookPlayer({
     } else {
       setProgressUpdateCount(progressUpdateCount - 1);
     }
-  }, [playbackStatus]);
+  }, [player.position]);
 
-  const updatePlexProgress = async () => {
-    const status = playbackStatus;
-    if (!status?.isLoaded || !audiobook || !queue) return;
+  const updatePlexProgress = () => {
     client.updateProgress(
       queue,
-      status.positionMillis,
-      status.isPlaying ? State.Playing : State.Paused,
+      player.position,
+      player.isPlaying ? State.Playing : State.Paused,
     );
   };
 
   const togglePlay = () => {
-    if (!playbackStatus?.isLoaded || !playback) return;
-
-    if (playbackStatus.isPlaying) {
-      playback.pauseAsync();
-    } else {
-      playback.playAsync();
-    }
+    player.togglePlay();
   };
 
   const rewindPlay = () => {
-    if (!playbackStatus?.isLoaded || !playback) return;
-    playback.setPositionAsync(
-      playbackStatus.positionMillis - RewindDurationMillis,
-    );
+    player.rewindPlay(RewindDurationMillis);
   };
 
   const forwardPlay = () => {
-    if (!playbackStatus?.isLoaded || !playback) return;
-    playback.setPositionAsync(
-      playbackStatus.positionMillis + ForwardDurationMillis,
-    );
+    player.forwardPlay(ForwardDurationMillis);
   };
 
   const increaseRate = () => {
-    if (!playback) return;
-    const newRate = (playbackRate * 10 + 1) / 10;
-    setPlaybackRate(newRate);
-    playback.setRateAsync(newRate, true);
+    const newRate = (player.rate * 10 + 1) / 10;
+    player.setRate(newRate);
   };
 
   const decreaseRate = () => {
-    if (!playback) return;
-    const newRate = (playbackRate * 10 - 1) / 10;
-    setPlaybackRate(newRate);
-    playback.setRateAsync(newRate, true);
+    const newRate = (player.rate * 10 - 1) / 10;
+    player.setRate(newRate);
   };
 
   const handleSliderChange = (value: number[]) => {
-    if (!playbackStatus?.isLoaded || !playback) return;
+    if (!player) return false;
 
     const [progressValue] = value;
 
@@ -134,16 +92,14 @@ export default function AudiobookPlayer({
       ? (progressValue / 100) * chapterDuration + chapter.startTimeOffset
       : (progressValue / 100) * audiobook.duration;
 
-    playback.setPositionAsync(Math.floor(newPositionMillis)).catch((e) => {
-      console.log("error setting position", e);
-    });
+    player.setPosition(Math.floor(newPositionMillis));
   };
 
   const onSelectChapter = (index: number) => {
-    if (!playback || !audiobook.chapters) return;
+    if (!player || !audiobook.chapters) return;
     const toChapter = audiobook.chapters.find((c) => c.index == index);
     // add 1 to chapter start offset to help chapter selection
-    if (toChapter) playback.setPositionAsync(toChapter.startTimeOffset + 1);
+    if (toChapter) player.setPosition(toChapter.startTimeOffset + 1);
   };
 
   const formatPlaybackTime = (time: number) => {
@@ -161,15 +117,11 @@ export default function AudiobookPlayer({
     return `${formatted.hours} hrs ${Math.floor(formatted.minutes!)} mins`;
   };
 
-  let progressPercent = 0;
-  let positionInBook = audiobook.viewOffset ?? 0;
+  const positionInBook = player.position;
+  let progressPercent = Math.floor((positionInBook / audiobook.duration) * 100);
+
   let positionInChapter = 0;
   let chapterDuration = 0;
-  if (playbackStatus?.isLoaded) {
-    positionInBook = playbackStatus.positionMillis;
-  }
-  progressPercent = Math.floor((positionInBook / audiobook.duration) * 100);
-
   if (chapter) {
     positionInChapter = positionInBook - chapter.startTimeOffset;
     chapterDuration = chapter.endTimeOffset - chapter.startTimeOffset;
@@ -205,10 +157,8 @@ export default function AudiobookPlayer({
           backgroundColor={theme.purple4}
           icon={
             <PlayPauseIcon
-              isLoading={!playbackStatus?.isLoaded ?? true}
-              isPlaying={
-                (playbackStatus?.isLoaded && playbackStatus.isPlaying) ?? false
-              }
+              isLoading={player.isLoading}
+              isPlaying={player.isPlaying}
               fill={theme.color.get()}
             />
           }
@@ -289,7 +239,7 @@ export default function AudiobookPlayer({
             </Group.Item>
             <Group.Item>
               <Button icon={<GaugeCircle />} size="$2" disabled>
-                {`${playbackRate}x`}
+                {`${player.rate}x`}
               </Button>
             </Group.Item>
             <Group.Item>

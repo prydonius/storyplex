@@ -14,6 +14,9 @@ import {
 } from "@react-navigation/native";
 import "expo-dev-client";
 
+// Setup TrackPlayer on mobile
+import "../utils/PlayerService";
+
 export default function RootLayout() {
   const hasHydrated = useStore.persist.hasHydrated;
   const colorScheme = useColorScheme();
