@@ -2,6 +2,8 @@ import { AVPlaybackStatus, Audio, InterruptionModeIOS } from "expo-av";
 import { useEffect, useRef, useState } from "react";
 import { PlayerControls } from "../types";
 import { PlexAudiobook } from "../api/PlexClient";
+import { useStore } from "../store";
+import { useShallow } from "zustand/react/shallow";
 
 export default function usePlayer(audiobook: PlexAudiobook): PlayerControls {
   // React Native Track Player doesn't support web yet: https://github.com/doublesymmetry/react-native-track-player/issues/572
@@ -12,7 +14,9 @@ export default function usePlayer(audiobook: PlexAudiobook): PlayerControls {
 function useExpoAVPlayer(audiobook: PlexAudiobook): PlayerControls {
   const playbackRef = useRef<Audio.Sound>();
   const [playbackStatus, setPlaybackStatus] = useState<AVPlaybackStatus>();
-  const [playbackRate, setPlaybackRate] = useState<number>(1);
+  const [playbackRate, setPlaybackRate] = useStore(
+    useShallow((state) => [state.playbackRate, state.setPlaybackRate]),
+  );
   const [buffering, setBuffering] = useState<boolean>(false);
 
   useEffect(() => {

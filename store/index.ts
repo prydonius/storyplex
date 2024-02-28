@@ -12,21 +12,24 @@ type State = {
     serverName: string;
     serverUri: string;
     serverAccessToken: string;
-  }
+  };
   plexLibrary?: PlexLibrary;
+  playbackRate: number;
 };
 
 type Actions = {
   setPlexAuthToken: (token: string) => void;
   setPlexServer: (name: string, uri: string, accessToken: string) => void;
   setPlexLibrary: (library: PlexLibrary) => void;
+  setPlaybackRate: (rate: number) => void;
 };
 
 export const useStore = create<State & Actions>()(
   persist(
     (set, get) => ({
-      setPlexAuthToken: (token: string) =>
-        set({ authToken: token }),
+      playbackRate: 1,
+      setPlaybackRate: (rate: number) => set({ playbackRate: rate }),
+      setPlexAuthToken: (token: string) => set({ authToken: token }),
       setPlexServer: (name: string, uri: string, accessToken: string) =>
         set({
           plexConnection: {
@@ -35,8 +38,7 @@ export const useStore = create<State & Actions>()(
             serverAccessToken: accessToken,
           },
         }),
-      setPlexLibrary: (library: PlexLibrary) =>
-        set({ plexLibrary: library }),
+      setPlexLibrary: (library: PlexLibrary) => set({ plexLibrary: library }),
     }),
     {
       name: "StoryPlex",

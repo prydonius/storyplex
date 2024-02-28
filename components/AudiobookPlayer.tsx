@@ -103,7 +103,7 @@ export default function AudiobookPlayer({
   };
 
   const formatPlaybackTime = (time: number) => {
-    const dur = Duration.fromMillis(time);
+    const dur = Duration.fromMillis(time / player.rate);
     if (dur.as("hours") < 1) {
       return dur.toFormat("mm:ss");
     } else {
@@ -112,7 +112,7 @@ export default function AudiobookPlayer({
   };
 
   const formatRemainingTime = (time: number) => {
-    const dur = Duration.fromMillis(time);
+    const dur = Duration.fromMillis(time / player.rate);
     const formatted = dur.shiftTo("hours", "minutes").toObject();
     return `${formatted.hours} hrs ${Math.floor(formatted.minutes!)} mins`;
   };

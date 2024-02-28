@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import TrackPlayer, {
   State,
   useIsPlaying,
@@ -7,13 +7,17 @@ import TrackPlayer, {
 } from "react-native-track-player";
 import { PlayerControls } from "../types";
 import { PlexAudiobook } from "../api/PlexClient";
+import { useStore } from "../store";
+import { useShallow } from "zustand/react/shallow";
 
 export default function usePlayer(audiobook: PlexAudiobook): PlayerControls {
   return useReactNativeTrackPlayer(audiobook);
 }
 
 function useReactNativeTrackPlayer(audiobook: PlexAudiobook): PlayerControls {
-  const [playbackRate, setPlaybackRate] = useState<number>(1);
+  const [playbackRate, setPlaybackRate] = useStore(
+    useShallow((state) => [state.playbackRate, state.setPlaybackRate]),
+  );
 
   useEffect(() => {
     const run = async () => {

@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { XStack, YStack } from "tamagui";
+import { ScrollView, YStack } from "tamagui";
 import { PlexAudiobook, PlexPlayQueue } from "../../../api/PlexClient";
 import AudiobookDetails from "../../../components/AudiobookDetails";
 import AudiobookPlayer from "../../../components/AudiobookPlayer";
@@ -27,12 +27,12 @@ export default function Audiobook() {
 
   return (
     <>
-      {/* <Stack.Screen options={{ title: audiobook.title }} /> */}
       <YStack flex={1} padding="$5" maxWidth={550}>
         <LoadingSpinner isLoading={!audiobook || !queue}>
-          <AudiobookDetails audiobook={audiobook!} />
-          <XStack alignSelf="center">{/* <H6>{chapter?.tag}</H6> */}</XStack>
-          <AudiobookPlayer audiobook={audiobook!} queue={queue!} />
+          <ScrollView>
+            <AudiobookDetails audiobook={audiobook!} />
+            <AudiobookPlayer audiobook={audiobook!} queue={queue!} />
+          </ScrollView>
         </LoadingSpinner>
       </YStack>
     </>
