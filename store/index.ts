@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { mountStoreDevtool } from "simple-zustand-devtools";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PlexLibrary } from "../api/PlexClient";
@@ -46,3 +47,7 @@ export const useStore = create<State & Actions>()(
     },
   ),
 );
+
+if (process.env.NODE_ENV === "development") {
+  mountStoreDevtool("Store", useStore);
+}
