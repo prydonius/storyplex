@@ -36,6 +36,7 @@ yarn-error.*
 
 # tamagui
 .tamagui
+tamagui.css
 
 # Local Netlify folder
 .netlify

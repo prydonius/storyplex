@@ -5,7 +5,7 @@ import { usePlexClient } from "../../utils/PlexClientProvider";
 import AudiobookCard from "../../components/AudiobookCard";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
-const Home: React.FC = () => {
+export default function Home() {
   const [client, library] = usePlexClient();
   const [audiobooks, setAudiobooks] = useState<PlexAudiobook[]>();
 
@@ -39,6 +39,4 @@ const Home: React.FC = () => {
       </LoadingSpinner>
     </YStack>
   );
-};
-
-export default Home;
+}

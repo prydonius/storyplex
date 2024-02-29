@@ -13,7 +13,7 @@ import {
 } from "tamagui";
 import { useShallow } from "zustand/react/shallow";
 
-const Setup: React.FC = () => {
+export default function Setup() {
   const [plexAuthToken, setPlexServer] = useStore(
     useShallow((state) => [state.authToken, state.setPlexServer]),
   );
@@ -67,6 +67,4 @@ const Setup: React.FC = () => {
       </XStack>
     </YStack>
   );
-};
-
-export default Setup;
+}

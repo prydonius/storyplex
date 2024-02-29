@@ -33,13 +33,13 @@ export default function RootLayout() {
   return (
     <TamaguiProvider config={config} defaultTheme={colorScheme?.toString()}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Layout />
+        <ThemedLayout />
       </ThemeProvider>
     </TamaguiProvider>
   );
 }
 
-export const Layout = () => {
+function ThemedLayout() {
   const theme = useTheme();
   return (
     <SafeAreaView
@@ -52,4 +52,4 @@ export const Layout = () => {
       <Slot />
     </SafeAreaView>
   );
-};
+}

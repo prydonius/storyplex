@@ -5,7 +5,7 @@ import { router } from "expo-router";
 import { Image } from "expo-image";
 import { Button, XStack, YStack, useTheme, H1 } from "tamagui";
 
-const Login: React.FC = () => {
+export default function Login() {
   const setPlexAuthToken = useStore((state) => state.setPlexAuthToken);
 
   const handlePressButtonAsync = async () => {
@@ -36,6 +36,4 @@ const Login: React.FC = () => {
       </XStack>
     </YStack>
   );
-};
-
-export default Login;
+}

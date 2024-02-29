@@ -18,7 +18,7 @@ import { PlexClient, PlexLibrary } from "../api/PlexClient";
 import { useStore } from "../store";
 import LoadingSpinner from "../components/LoadingSpinner";
 
-const Libraries: React.FC = () => {
+export default function Libraries() {
   const [plexAuthToken, conn, setPlexLibrary] = useStore(
     useShallow((state) => [
       state.authToken,
@@ -96,6 +96,4 @@ const Libraries: React.FC = () => {
       </LoadingSpinner>
     </YStack>
   );
-};
-
-export default Libraries;
+}
