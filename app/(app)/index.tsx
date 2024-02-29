@@ -51,7 +51,6 @@ export default function Home() {
       <YStack padding="$3" gap="$5">
         <AudiobookSection title="Continue Reading" audiobooks={audiobooks} />
         <AudiobookSection title="Recently Added" audiobooks={audiobooks} />
-        <AudiobookSection title="Finished" audiobooks={audiobooks} />
       </YStack>
     </ScrollView>
   );
