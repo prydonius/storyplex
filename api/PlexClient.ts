@@ -12,7 +12,7 @@ export class PlexClient {
   private static plexApiBase = "https://plex.tv/api/v2";
   private static audnexusAgent = "com.plexapp.agents.audnexus";
   private static headers = {
-    "Accept": "application/json",
+    Accept: "application/json",
     "Content-Type": "application/json",
     "X-Plex-Product": this.plexAppName,
     "X-Plex-Client-Identifier": this.plexClientId,
@@ -151,7 +151,9 @@ export class PlexClient {
 
     return request.object.mediaContainer.metadata.map((item) => ({
       key: Number(item.ratingKey!),
-      thumb: item.thumb ? `${this.serverUri}${item.thumb}?X-Plex-Token=${this.authToken}` : undefined,
+      thumb: item.thumb
+        ? `${this.serverUri}${item.thumb}?X-Plex-Token=${this.authToken}`
+        : undefined,
       title: item.title!,
       author: item.parentTitle,
       summary: item.summary,
@@ -159,22 +161,7 @@ export class PlexClient {
       addedAt: new Date(item.addedAt!),
       duration: item.duration!,
       viewOffset: item.viewOffset,
-    }))
-  }
-
-  async getAudiobook(key: number): Promise<unknown> {
-    // we can't use PlexAPI here because it doesn't return the full object and is missing some fields
-    // TODO: patch PlexAPI to return fields we want
-    const request = await fetch(
-      `${this.serverUri}/library/metadata/${key}/children?includeChapters=true&X-Plex-Token=${this.authToken}`,
-      {
-        method: "GET",
-        headers: PlexClient.headers,
-      },
-    );
-    const data = await request.json();
-    // TODO: map to type
-    return data;
+    }));
   }
 
   async queueAudiobook(key: number): Promise<[PlexPlayQueue, PlexAudiobook]> {
@@ -184,19 +171,16 @@ export class PlexClient {
       own: 1,
       includeChapters: 1,
       "X-Plex-Token": this.authToken,
-    })
+    });
 
-    const request = await fetch(
-      `${this.serverUri}/playQueues?${query}`,
-      {
-        headers: PlexClient.headers,
-        method: "POST",
-      },
-    );
+    const request = await fetch(`${this.serverUri}/playQueues?${query}`, {
+      headers: PlexClient.headers,
+      method: "POST",
+    });
 
-    const data = await request.json()
+    const data = await request.json();
     const playQueue = data.MediaContainer;
-    return [playQueue, this.audiobookFromQueue(playQueue)]
+    return [playQueue, this.audiobookFromQueue(playQueue)];
   }
 
   audiobookFromQueue(queue: PlexPlayQueue): PlexAudiobook {
@@ -204,7 +188,9 @@ export class PlexClient {
     const audiobookUri = `${this.serverUri}${audiobookSrcPath}?X-Plex-Token=${this.authToken}`;
     return {
       key: Number(queue.Metadata[0].ratingKey),
-      thumb: queue.Metadata[0].thumb ? `${this.serverUri}${queue.Metadata[0].thumb}?X-Plex-Token=${this.authToken}` : undefined,
+      thumb: queue.Metadata[0].thumb
+        ? `${this.serverUri}${queue.Metadata[0].thumb}?X-Plex-Token=${this.authToken}`
+        : undefined,
       title: queue.Metadata[0].title,
       author: queue.Metadata[0].originalTitle,
       summary: undefined, // unavailable from this API
@@ -214,7 +200,7 @@ export class PlexClient {
       viewOffset: queue.Metadata[0].viewOffset,
       duration: queue.Metadata[0].duration,
       chapters: queue.Metadata[0].Chapter,
-    }
+    };
   }
 
   updateProgress(queue: PlexPlayQueue, positionMillis: number, state: State) {
@@ -311,7 +297,7 @@ export interface PlexItemMetadata {
       key: string;
       size: number;
       container: string;
-    }[]
+    }[];
   }[];
 
   Chapter: PlexChapter[];
