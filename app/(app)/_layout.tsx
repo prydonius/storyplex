@@ -5,10 +5,7 @@ export default function Layout() {
   return (
     <PlexClientProvider>
       <Stack>
-        <Stack.Screen
-          name="index"
-          options={{ title: "Home", headerShown: false }}
-        />
+        <Stack.Screen name="index" options={{ title: "Home" }} />
         <Stack.Screen name="audiobook/[key]" options={{ title: "" }} />
       </Stack>
     </PlexClientProvider>

@@ -1,6 +1,6 @@
-import { router } from "expo-router";
-import { Card } from "tamagui";
 import { Image } from "expo-image";
+import { router } from "expo-router";
+import { Card, Text } from "tamagui";
 
 export interface AudiobookCardProps {
   path: string;
@@ -25,11 +25,15 @@ export default function AudiobookCard(props: AudiobookCardProps) {
         router.push(props.path);
       }}
     >
-      {/* <Card.Footer padded>
-        <H6>Author</H6>
-      </Card.Footer> */}
+      <Card.Footer backgrounded opacity={0.5}>
+        <Text paddingHorizontal="$2">5hrs left</Text>
+      </Card.Footer>
       <Card.Background>
-        <Image source={props.thumb} contentFit="cover" style={{ flex: 1 }} />
+        <Image
+          source={props.thumb}
+          contentFit="cover"
+          style={{ flex: 1, borderRadius: 10 }}
+        />
       </Card.Background>
     </Card>
   );
