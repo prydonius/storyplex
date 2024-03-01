@@ -5,12 +5,18 @@ export interface LoadingSpinnerProps {
 }
 export default function LoadingSpinner({
   isLoading,
+  backgroundColor,
   children,
   ...props
 }: React.PropsWithChildren<LoadingSpinnerProps & SpinnerProps>) {
   if (isLoading) {
     return (
-      <XStack flex={1} alignItems="center" justifyContent="center">
+      <XStack
+        flex={1}
+        alignItems="center"
+        justifyContent="center"
+        backgroundColor={backgroundColor}
+      >
         <Spinner size="large" color="$purple10" {...props} />
       </XStack>
     );
