@@ -8,8 +8,7 @@ import { useFonts } from "expo-font";
 import { Slot, SplashScreen } from "expo-router";
 import React, { useEffect } from "react";
 import { useColorScheme } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { TamaguiProvider, useTheme } from "tamagui";
+import { TamaguiProvider, useTheme, View } from "tamagui";
 import { useStore } from "../store";
 import { config } from "../tamagui.config";
 import "../tamagui.css";
@@ -49,16 +48,6 @@ export default function RootLayout() {
 }
 
 function ThemedLayout() {
-  const theme = useTheme();
-  return (
-    <SafeAreaView
-      style={{
-        width: "100%",
-        height: "100%",
-        backgroundColor: theme.background.val,
-      }}
-    >
-      <Slot />
-    </SafeAreaView>
-  );
+  // const theme = useTheme();
+  return <Slot />;
 }

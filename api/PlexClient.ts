@@ -158,7 +158,7 @@ export class PlexClient {
       author: item.parentTitle,
       summary: item.summary,
       year: item.year,
-      addedAt: new Date(item.addedAt!),
+      addedAt: new Date(item.addedAt! * 1000),
       duration: item.duration!,
       viewOffset: item.viewOffset,
     }));
@@ -187,7 +187,8 @@ export class PlexClient {
     const audiobookSrcPath = queue.Metadata[0].Media[0].Part[0].key;
     const audiobookUri = `${this.serverUri}${audiobookSrcPath}?X-Plex-Token=${this.authToken}`;
     return {
-      key: Number(queue.Metadata[0].ratingKey),
+      // the parent key is the "album" key for this audiobook
+      key: Number(queue.Metadata[0].parentRatingKey),
       thumb: queue.Metadata[0].thumb
         ? `${this.serverUri}${queue.Metadata[0].thumb}?X-Plex-Token=${this.authToken}`
         : undefined,
@@ -195,7 +196,8 @@ export class PlexClient {
       author: queue.Metadata[0].originalTitle,
       summary: undefined, // unavailable from this API
       year: queue.Metadata[0].parentYear,
-      addedAt: queue.Metadata[0].addedAt,
+      addedAt: new Date(queue.Metadata[0].addedAt * 1000),
+      lastViewedAt: new Date(queue.Metadata[0].lastViewedAt * 1000),
       uri: audiobookUri,
       viewOffset: queue.Metadata[0].viewOffset,
       duration: queue.Metadata[0].duration,
@@ -261,6 +263,7 @@ export interface PlexAudiobook {
   summary?: string;
   year?: number;
   addedAt: Date;
+  lastViewedAt?: Date;
   uri?: string;
   viewOffset?: number;
   duration: number;
@@ -284,13 +287,15 @@ export interface PlexChapter {
 export interface PlexItemMetadata {
   key: string;
   ratingKey: string;
+  parentRatingKey: string;
   duration: number;
   viewOffset?: number;
   parentYear: number;
   thumb: string;
   title: string;
   originalTitle: string;
-  addedAt: Date;
+  addedAt: number;
+  lastViewedAt: number;
 
   Media: {
     Part: {
