@@ -10,7 +10,7 @@ export default {
     name: devify("storyplex", " (Dev)"),
     slug: "storyplex",
     scheme: "storyplex",
-    version: "1.0.2",
+    version: "1.0.3",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "automatic",
@@ -23,7 +23,7 @@ export default {
     ios: {
       supportsTablet: true,
       bundleIdentifier: devify("com.prydonius.storyplex", ".dev"),
-      buildNumber: "3",
+      buildNumber: "4",
       infoPlist: { UIBackgroundModes: ["audio"] },
     },
     android: {
