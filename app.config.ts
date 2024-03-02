@@ -1,7 +1,7 @@
 const DEV_BUILD = process.env.APP_VARIANT === "development";
 
 function devify(str: string, devPostfix: string) {
-  if (!DEV_BUILD) return "";
+  if (!DEV_BUILD) return str;
   return `${str}${devPostfix}`;
 }
 
