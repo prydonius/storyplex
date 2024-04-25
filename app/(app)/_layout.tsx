@@ -15,10 +15,6 @@ export default function Layout() {
         }}
       >
         <Stack.Screen name="index" options={{ title: "StoryPlex" }} />
-        <Stack.Screen
-          name="tag/[key]"
-          options={({ route }) => ({ title: route.params.key })}
-        />
         <Stack.Screen name="audiobook/[key]" options={{ title: "" }} />
       </Stack>
     </PlexClientProvider>
