@@ -9,7 +9,6 @@ import { usePlexClient } from "../../../utils/PlexClientProvider";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useShallow } from "zustand/react/shallow";
 import { useStore } from "../../../store";
-import { Platform } from "react-native";
 
 export default function Audiobook() {
   const [client] = usePlexClient();

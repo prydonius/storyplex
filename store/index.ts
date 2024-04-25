@@ -19,6 +19,7 @@ type State = {
   // imported audiobooks
   audiobooks?: {
     byId: Map<number, PlexAudiobook>;
+    byTag: Map<string, PlexAudiobook[]>;
   };
 
   playbackRate: number;
@@ -32,6 +33,18 @@ type Actions = {
   updateAudiobook: (audiobook: PlexAudiobook) => void;
   setPlaybackRate: (rate: number) => void;
 };
+
+// shared helpers
+function audiobooksByTag(
+  newAudiobooks: PlexAudiobook[],
+): Map<string, PlexAudiobook[]> {
+  return newAudiobooks.reduce((byTag, a) => {
+    a.tags.forEach((t) => {
+      byTag.set(t, [...(byTag.get(t) ?? []), a]);
+    });
+    return byTag;
+  }, new Map());
+}
 
 export const useStore = create<State & Actions>()(
   persist(
@@ -58,16 +71,23 @@ export const useStore = create<State & Actions>()(
             return [a.key, value];
           }),
         );
-        set({ audiobooks: { byId: newById } });
+        set({
+          audiobooks: { byId: newById, byTag: audiobooksByTag(newAudiobooks) },
+        });
       },
       updateAudiobook: (audiobook: PlexAudiobook) => {
         const { audiobooks } = get();
         if (audiobooks) {
           const byId = new Map(audiobooks.byId);
-          byId.set(audiobook.key, audiobook);
+          const existing = byId.get(audiobook.key);
+          byId.set(
+            audiobook.key,
+            existing ? deepmergeDefined(existing, audiobook) : audiobook,
+          );
           set({
             audiobooks: {
               byId: byId,
+              byTag: audiobooksByTag(Array.from(byId.values())),
             },
           });
         }
@@ -80,11 +100,17 @@ export const useStore = create<State & Actions>()(
           if (value instanceof Map) {
             return { type: "map", value: Array.from(value.entries()) };
           }
+          if (value instanceof Set) {
+            return { type: "set", value: Array.from(value) };
+          }
           return value;
         },
         reviver: (key, value) => {
           if (value && value.type === "map") {
             return new Map(value.value);
+          }
+          if (value && value.type === "set") {
+            return new Set(value.value);
           }
           // Date fields are stored as strings
           if (key == "addedAt" || key == "lastViewedAt") {

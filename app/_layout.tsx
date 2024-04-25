@@ -25,6 +25,7 @@ export default function RootLayout() {
 
   const [loaded] = useFonts({
     Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
+    InterItalic: require("@tamagui/font-inter/otf/Inter-Italic.otf"),
     InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
   });
 
@@ -48,6 +49,12 @@ export default function RootLayout() {
 }
 
 function ThemedLayout() {
-  // const theme = useTheme();
-  return <Slot />;
+  const theme = useTheme();
+  return (
+    <View flex={1} backgroundColor={theme.purple1}>
+      <View flex={1} maxWidth={800}>
+        <Slot />
+      </View>
+    </View>
+  );
 }

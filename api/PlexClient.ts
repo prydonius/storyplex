@@ -161,6 +161,7 @@ export class PlexClient {
       addedAt: new Date(item.addedAt! * 1000),
       duration: item.duration!,
       viewOffset: item.viewOffset,
+      tags: new Set(item.genre?.map((x) => x.tag!) ?? []),
     }));
   }
 
@@ -192,7 +193,8 @@ export class PlexClient {
       thumb: queue.Metadata[0].thumb
         ? `${this.serverUri}${queue.Metadata[0].thumb}?X-Plex-Token=${this.authToken}`
         : undefined,
-      title: queue.Metadata[0].title,
+      // use the parentTitle for consistency with the "albums" we fetch in getAudiobooks
+      title: queue.Metadata[0].parentTitle,
       author: queue.Metadata[0].originalTitle,
       summary: undefined, // unavailable from this API
       year: queue.Metadata[0].parentYear,
@@ -202,6 +204,7 @@ export class PlexClient {
       viewOffset: queue.Metadata[0].viewOffset,
       duration: queue.Metadata[0].duration,
       chapters: queue.Metadata[0].Chapter,
+      tags: new Set(),
     };
   }
 
@@ -268,6 +271,7 @@ export interface PlexAudiobook {
   viewOffset?: number;
   duration: number;
   chapters?: PlexChapter[];
+  tags: Set<string>;
 }
 
 export interface PlexPlayQueue {
@@ -292,6 +296,7 @@ export interface PlexItemMetadata {
   viewOffset?: number;
   parentYear: number;
   thumb: string;
+  parentTitle: string;
   title: string;
   originalTitle: string;
   addedAt: number;
